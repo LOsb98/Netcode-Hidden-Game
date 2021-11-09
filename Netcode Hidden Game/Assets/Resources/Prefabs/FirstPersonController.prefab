@@ -155,7 +155,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4319606705918916626}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: c50366502dcd4e34ea967ef8d7284a55, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
@@ -190,18 +190,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c867bf25bc21c884fa70f301608d23ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grounded: 0
-  speed: 5
-  jumpForce: 5
-  move: {x: 0, y: 0, z: 0}
-  mouseSens: 1
-  groundCheckPos: {fileID: 4319606706635446095}
-  groundCheckSize: 0.55
-  groundCheckLayer:
+  _grounded: 0
+  _speed: 5
+  _jumpForce: 3
+  _move: {x: 0, y: 0, z: 0}
+  _mouseSens: 1
+  _groundCheckPos: {fileID: 4319606706635446095}
+  _groundCheckSize: 0.65
+  _groundCheckLayer:
     serializedVersion: 2
     m_Bits: 8
-  movement: {fileID: 5265395008694196427}
-  camPos: {fileID: 4225389826182322882}
+  _movement: {fileID: 5265395008694196427}
+  _camPos: {fileID: 4225389826182322882}
 --- !u!114 &5265395008694196427
 MonoBehaviour:
   m_ObjectHideFlags: 0

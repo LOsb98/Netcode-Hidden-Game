@@ -130,10 +130,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _speed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _camPos
+      value: 
+      objectReference: {fileID: 987203614}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _movement
+      value: 
+      objectReference: {fileID: 276804641}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _jumpForce
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _mouseSens
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _groundCheckPos
+      value: 
+      objectReference: {fileID: 1650087747}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _groundCheckSize
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 492946692692051882, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: _groundCheckLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4319606705918916626, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
       propertyPath: m_Name
       value: FirstPersonController
       objectReference: {fileID: 0}
+    - target: {fileID: 4319606705918916630, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: c50366502dcd4e34ea967ef8d7284a55, type: 2}
     - target: {fileID: 4319606705918916631, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -676,6 +712,17 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!114 &276804641 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5265395008694196427, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+  m_PrefabInstance: {fileID: 135229888}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e22d48aff1bc441bea736cb4c07fbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &408201900
 Mesh:
   m_ObjectHideFlags: 0
@@ -2914,6 +2961,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!4 &1650087747 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4319606706635446095, guid: 56b0666ceda54eb49baf9d69046d2da0, type: 3}
+  m_PrefabInstance: {fileID: 135229888}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1687258581
 GameObject:
   m_ObjectHideFlags: 0
