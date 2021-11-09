@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        #region mouse
+        #region Inputs
         //Movement keys
         float xAxis = Input.GetAxisRaw("Horizontal");
         float zAxis = Input.GetAxisRaw("Vertical");
@@ -59,20 +59,20 @@ public class PlayerController : MonoBehaviour
 
 
         #region controls and movement
-        //Ground check sphere
-        if (!Physics.CheckSphere(_groundCheckPos.position, _groundCheckSize, _groundCheckLayer)) _grounded = false;
-        else _grounded = true;
-        
         //Jumping
         if (Input.GetKeyDown("space") && _grounded == true)
         {
             _movement.Jump(_rb, _jumpForce);
         }
 
+        //Ground check sphere
+        if (!Physics.CheckSphere(_groundCheckPos.position, _groundCheckSize, _groundCheckLayer)) _grounded = false;
+        else _grounded = true;
+
         //Using different methods for aerial and grounded movement
         if (!_grounded)
         {
-            _movement.AirMove(_rb, _move, _speed);
+            //_movement.AirMove(_rb, _move, _speed);
             return;
         }
         _movement.GroundMove(_rb, _move, _speed);
