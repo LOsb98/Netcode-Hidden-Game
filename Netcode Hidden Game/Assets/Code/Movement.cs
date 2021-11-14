@@ -4,30 +4,49 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public void GroundMove(Rigidbody rb, Vector3 moveVector, float speed)
+    [SerializeField] private float _jumpForce;
+    [SerializeField] private float _jumpStartHeight;
+    [SerializeField] private Rigidbody _rb;
+
+    private void OnValidate()
+    {
+        if (!_rb)
+        {
+            if (TryGetComponent(out Rigidbody rb))
+            {
+                _rb = rb;
+            }
+            else
+            {
+                Debug.LogError($"{gameObject} uses movement but doesn't have a rigidbody component attached");
+            }
+        }
+    }
+
+    public void GroundMove(Vector3 moveVector)
     {
         //Setting velocity directly makes ground movement more consistent
         //Reduces how many physics factors can affect movement
-        rb.velocity = new Vector3(moveVector.x, -1f, moveVector.z);
+        _rb.velocity = new Vector3(moveVector.x, moveVector.y, moveVector.z);
     }
 
-    public void AirMove(Rigidbody rb, Vector3 moveVector, float speed)
+    public void AirMove(Vector3 moveVector, float maxSpeed)
     {
-        if (rb.velocity.magnitude <= speed)
+        if (_rb.velocity.magnitude <= maxSpeed)
         {
-            rb.AddForce(moveVector, ForceMode.Acceleration);
+            _rb.AddForce(moveVector, ForceMode.Acceleration);
         }
 
-        float maxAxisSpeed = speed / 2;
+        float maxAxisSpeed = maxSpeed / 2;
 
         //Clamping velocity is needed when using AddForce()
         //Stops player gaining infinite speed
-        rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -maxAxisSpeed, maxAxisSpeed), rb.velocity.y, Mathf.Clamp(rb.velocity.z, -maxAxisSpeed, maxAxisSpeed));
+        _rb.velocity = new Vector3(Mathf.Clamp(_rb.velocity.x, -maxAxisSpeed, maxAxisSpeed), _rb.velocity.y, Mathf.Clamp(_rb.velocity.z, -maxAxisSpeed, maxAxisSpeed));
     }
 
-    public void Jump(Rigidbody rb, float jumpForce)
+    public void Jump()
     {
-        transform.position += new Vector3(0f, 0.2f, 0f);
-        rb.velocity += new Vector3(0, jumpForce, 0);
+        transform.position += new Vector3(0f, _jumpStartHeight, 0f);
+        _rb.velocity = new Vector3(_rb.velocity.x, _jumpForce, _rb.velocity.z);
     }
 }
