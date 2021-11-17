@@ -1,51 +1,55 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+//TODO: Split Misc into more descriptive namespaces when there are more classes in here
+namespace HiddenGame.Misc
 {
-    [SerializeField] private Transform _followPos;
-
-    private static CameraFollow _instance;
-
-    public static CameraFollow Instance
+    public class CameraFollow : MonoBehaviour
     {
-        get
-        {
-            return _instance;
-        }
-    }
+        [SerializeField] private Transform _followPos;
 
-    public Transform FollowPos
-    {
-        get
-        {
-            return _followPos;
-        }
-        set
-        {
-            _followPos = value;
-        }
-    }
+        private static CameraFollow _instance;
 
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
+        public static CameraFollow Instance
         {
-            Destroy(this.gameObject);
+            get
+            {
+                return _instance;
+            }
         }
-        else
+
+        public Transform FollowPos
         {
-            _instance = this;
+            get
+            {
+                return _followPos;
+            }
+            set
+            {
+                _followPos = value;
+            }
         }
-    }
 
-    private void LateUpdate()
-    {
-        //Using Lerp() instead of setting transform.position makes camera movement much smoother
-        //Lerp() created problems with viewmodels when they existed as children of the WeaponPos object, jittered around a lot
-        //Using Lerp() + an overlap camera for weapon viewmodels is the best combination so far
+        private void Awake()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                _instance = this;
+            }
+        }
 
-        transform.position = Vector3.Lerp(transform.position, _followPos.position, 0.3f);
-        transform.rotation = _followPos.rotation;
+        private void LateUpdate()
+        {
+            //Using Lerp() instead of setting transform.position makes camera movement much smoother
+            //Lerp() created problems with viewmodels when they existed as children of the WeaponPos object, jittered around a lot
+            //Using Lerp() + an overlap camera for weapon viewmodels is the best combination so far
+
+            transform.position = Vector3.Lerp(transform.position, _followPos.position, 0.3f);
+            transform.rotation = _followPos.rotation;
+        }
     }
 }
