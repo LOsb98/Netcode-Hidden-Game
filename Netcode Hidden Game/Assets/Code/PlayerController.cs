@@ -49,12 +49,28 @@ public class PlayerController : NetworkBehaviour
         //Having one camera in scene which tracks the local player is better than manually destroying every non-player camera
         //More flexibility in the long run with telling the camera where to go
         CameraFollow.Instance.FollowPos = _camPos;
-
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
     {
+        if (!IsLocalPlayer)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            if (Cursor.lockState != CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
+
+
         GetMovementInput();
         GetMouseInput();
         CheckGround();
@@ -64,6 +80,11 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (!IsLocalPlayer)
+        {
+            return;
+        }
+
         ApplyMovementInput();
         if (_jumping)
         {
