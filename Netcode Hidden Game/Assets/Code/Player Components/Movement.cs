@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenGame.ScriptableObjects;
 
 namespace HiddenGame.PlayerComponents
 {
+    //This class handles applying the actual movement and holds values like movement speed
+    //Controller scripts decide when to perform actions, check states, and calculate movement vectors
     public class Movement : MonoBehaviour
     {
+        [SerializeField] private float _speed;
+        [SerializeField] private float _slopeForce;
         [SerializeField] private float _jumpForce;
         [SerializeField] private float _jumpStartHeight;
         [SerializeField] private Rigidbody _rb;
@@ -25,11 +30,47 @@ namespace HiddenGame.PlayerComponents
             }
         }
 
-        public void GroundMove(Vector3 moveVector)
+        public void SetData(CharacterData charData)
         {
-            //Setting velocity directly makes ground movement more consistent
-            //Reduces how many physics factors can affect movement
-            _rb.velocity = new Vector3(moveVector.x, moveVector.y, moveVector.z);
+            _speed = charData.Speed;
+            _jumpForce = charData.JumpForce;
+            
+        }
+
+        public void HorizontalMove(Vector3 moveVector, Vector3 slopeNormal, bool isGrounded)
+        {
+            if (isGrounded)
+            {
+                //Account for slope angle
+                Vector3 slopeVector = (Vector3.Cross(slopeNormal, transform.right)) * -1f;
+                Debug.DrawRay(transform.position, slopeVector, Color.green);
+
+                Vector3 slopeMovementDirection = Vector3.Cross(slopeNormal, moveVector);
+
+                Vector3 finalMoveDirection = Vector3.Cross(slopeMovementDirection, slopeNormal);
+
+                moveVector = finalMoveDirection.normalized;
+                Debug.DrawRay(transform.position, finalMoveDirection, Color.blue);
+            }
+
+            moveVector *= _speed;
+
+            Debug.Log(moveVector);
+
+            if (!isGrounded)
+            {
+                moveVector = new Vector3(moveVector.x, _rb.velocity.y, moveVector.z);
+            }
+
+            if (slopeNormal == Vector3.up)
+            {
+                //Check if player is near a flat surface
+                //If they are, drag them down to stop them flying off slopes
+
+                moveVector = new Vector3(moveVector.x, -_slopeForce, moveVector.z);
+            }
+
+            _rb.velocity = moveVector;
         }
 
         public void AirMove(Vector3 moveVector, float maxSpeed)

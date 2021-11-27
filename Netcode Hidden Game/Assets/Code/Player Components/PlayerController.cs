@@ -1,34 +1,28 @@
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using HiddenGame.Misc;
 
 namespace HiddenGame.PlayerComponents
 {
-    public class PlayerController : NetworkBehaviour
+    public abstract class PlayerController : NetworkBehaviour
     {
-        [SerializeField] private float xVector;
-        [SerializeField] private float yVector;
-        [SerializeField] private float zVector;
-
-        #region Movement values
-        public bool _grounded;
-        public float _speed;
-        public int _jumpForce;
+        #region Movement states
+        [SerializeField] private Vector3 _move;
         private bool _jumping;
-        public Vector3 _move;
+        private bool _grounded;
+
         #endregion
 
         #region Mouse input values
-        public float _mouseSens;
+        [SerializeField] private float _mouseSens = 1f;
         private float _verticalRotation = 0f;
         #endregion
 
         #region Ground check values
         [SerializeField] private float _slopeCheckDistance;
-        [SerializeField] private float _slopeForce;
-        public Transform _groundCheckPos;
-        public float _groundCheckSize;
-        public LayerMask _groundCheckLayer;
+        [SerializeField] private Transform _groundCheckPos;
+        [SerializeField] private float _groundCheckSize;
+        [SerializeField] private LayerMask _groundCheckLayer;
 
         #endregion
 
@@ -41,22 +35,20 @@ namespace HiddenGame.PlayerComponents
 
         #endregion
 
-        private void Start()
+        protected void Start()
         {
-            if (!IsLocalPlayer)
+            if (isLocalPlayer)
             {
-                Destroy(this);
-                return;
+                //Having one camera in scene which tracks the local player is better than manually destroying every non-player camera
+                //More flexibility in the long run with telling the camera where to go
+                CameraFollow.Instance.enabled = true;
+                CameraFollow.Instance.FollowPos = _camPos;
             }
-
-            //Having one camera in scene which tracks the local player is better than manually destroying every non-player camera
-            //More flexibility in the long run with telling the camera where to go
-            CameraFollow.Instance.FollowPos = _camPos;
         }
 
-        private void Update()
+        protected void Update()
         {
-            if (!IsLocalPlayer)
+            if (!isLocalPlayer)
             {
                 return;
             }
@@ -73,22 +65,24 @@ namespace HiddenGame.PlayerComponents
                 }
             }
 
-
+            CheckIfGrounded();
             GetMovementInput();
             GetMouseInput();
-            CheckGround();
 
             CheckJumpInput();
         }
 
         private void FixedUpdate()
         {
-            if (!IsLocalPlayer)
+            if (!isLocalPlayer)
             {
                 return;
             }
 
+            //Take movement inputs in Update()
+            //Apply them in FixedUpdate for consistency
             ApplyMovementInput();
+
             if (_jumping)
             {
                 _movement.Jump();
@@ -118,16 +112,14 @@ namespace HiddenGame.PlayerComponents
             //Gives Vector3 to use for moving player
             _move = (transform.right * xAxis + transform.forward * zAxis);
             _move.Normalize();
-            _move *= _speed;
         }
 
-        private void CheckGround()
+        private void CheckIfGrounded()
         {
             //Ground check sphere
             if (!Physics.CheckSphere(_groundCheckPos.position, _groundCheckSize, _groundCheckLayer))
             {
                 _rb.useGravity = true;
-
                 _grounded = false;
             }
             else
@@ -136,41 +128,34 @@ namespace HiddenGame.PlayerComponents
                 _rb.useGravity = false;
                 _grounded = true;
             }
+        }
 
+        private Vector3 CheckSlope() 
+        { 
             //Check for slope
             RaycastHit slopeCheck;
 
             if (Physics.Raycast(transform.position, Vector3.down, out slopeCheck, _slopeCheckDistance))
             {
-                if (slopeCheck.normal == Vector3.up)
-                {
-                    //Return if the surface is not a slope
-                    //Also drag the player down while they are on a flat surface
-                    //Stops them from flying up when walking up a slope onto a flat surface
-                    _rb.velocity = new Vector3(_rb.velocity.x, -5f, _rb.velocity.z);
-                    return;
-                }
+                ////If on flat surface
+                //if (slopeCheck.normal == Vector3.up)
+                //{
+                //    //Drag the player down while they are on a flat surface
+                //    //Stops them from flying up when walking up a slope onto a flat surface
+                //    //Or vice versa
+                //    _move += new Vector3(0, -_slopeForce, 0);
+                //    return;
+                //}
 
-                Vector3 slopeVector = (Vector3.Cross(slopeCheck.normal, transform.right)) * -1f;
 
-                Debug.DrawRay(transform.position, slopeVector, Color.green);
 
-                Vector3 slopeMovement = Vector3.Cross(slopeCheck.normal, _move);
-                Vector3 finalMove = Vector3.Cross(slopeMovement, slopeCheck.normal);
-
-                _move = finalMove.normalized * _speed;
-
-                Debug.DrawRay(transform.position, finalMove, Color.blue);
-
-                //float slopeX = slopeCheck.normal.x;
-                //float slopeY = slopeCheck.normal.y;
-                //float slopeZ = slopeCheck.normal.z;
-
-                //Debug.Log($"This slope: {slopeCheck.normal}");
+        
                 //Debug.Log($"X: {slopeX}");
                 //Debug.Log($"Y: {slopeY}");
                 //Debug.Log($"Z: {slopeZ}");
             }
+            Debug.Log($"This slope: {slopeCheck.normal}");
+            return slopeCheck.normal;
         }
 
         private void CheckJumpInput()
@@ -184,13 +169,7 @@ namespace HiddenGame.PlayerComponents
 
         private void ApplyMovementInput()
         {
-            //Using different methods for aerial and grounded movement
-            if (!_grounded)
-            {
-                //_movement.AirMove(_rb, _move, _speed);
-                return;
-            }
-            _movement.GroundMove(_move);
+            _movement.HorizontalMove(_move, CheckSlope(), _grounded);
         }
 
         private void OnDrawGizmosSelected()
@@ -198,9 +177,6 @@ namespace HiddenGame.PlayerComponents
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(_groundCheckPos.position, _groundCheckSize);
             Gizmos.DrawLine(transform.position, transform.position + (Vector3.down * _slopeCheckDistance));
-
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(transform.position, transform.position + new Vector3(xVector, yVector, zVector));
         }
     }
 }
