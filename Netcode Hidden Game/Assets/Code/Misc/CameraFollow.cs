@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 
 //TODO: Split Misc into more descriptive namespaces when there are more classes in here
