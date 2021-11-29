@@ -10,6 +10,8 @@ namespace HiddenGame.Hidden
 {
     public class HiddenAbilities : PlayerController
     {
+        private float _leapTimer;
+
         private void Awake()
         {
             Debug.Log("Spawned as hidden");
@@ -18,6 +20,11 @@ namespace HiddenGame.Hidden
         private void Update()
         {
             base.Update();
+        }
+
+        protected override void FireAbility()
+        {
+            _movement.BigJump(_camPos.transform.forward);
         }
 
     }
