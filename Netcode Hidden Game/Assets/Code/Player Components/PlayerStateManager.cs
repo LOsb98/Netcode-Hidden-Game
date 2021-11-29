@@ -12,7 +12,7 @@ namespace HiddenGame.PlayerComponents
     {
         [SyncVar(hook = nameof(InitializeCharacter))] private bool _isHidden;
 
-        //[SyncVar(hook = nameof(SetPlayerActive))] [SerializeField] private bool _isSpawned;
+        [SyncVar(hook = nameof(SetPlayerActive))] private bool _isSpawned;
 
         [SerializeField] private CharacterData _humanData;
         [SerializeField] private CharacterData _hiddenData;
@@ -25,49 +25,49 @@ namespace HiddenGame.PlayerComponents
         [SerializeField] private Material _hiddenMaterial;
 
         [SerializeField] private Movement _moveScript;
+        [SerializeField] private PlayerHealth _healthScript;
+
+        private PlayerController _activeController;
 
         private void Start()
         {
+            if (!isLocalPlayer)
+            {
+                Destroy(GetComponent<Rigidbody>());
+            }
+        }
 
+        public override void OnStartServer()
+        {
+            InitializeCharacter(!_isHidden, _isHidden);
+            SetPlayerActive(!_isSpawned, _isSpawned);
         }
 
         public override void OnStartClient()
         {
-            //If this is not the local player, we can delete these components
-            //The game (so far) is client authoritative for movement, so we don't care about what these scritps want to do
-            if (!isLocalPlayer)
-            {
-                Destroy(_moveScript);
-                Destroy(_humanScript);
-                Destroy(_hiddenScript);
-                Destroy(GetComponent<Rigidbody>());
-            }
-
-            //Calling hook method here to make sure visuals are synced
             InitializeCharacter(!_isHidden, _isHidden);
+            SetPlayerActive(!_isSpawned, _isSpawned);
         }
 
         private void InitializeCharacter(bool oldRole, bool newRole)
         {
             //Hook method for setting data/visuals
-            SetCharacterMaterial(newRole);
-
-            if (isLocalPlayer)
+            
+            if (newRole)
             {
-                //SetCharacterData(_isHidden);
-            }
-        }
-
-        private void SetCharacterMaterial(bool characterIsHidden)
-        {
-            if (characterIsHidden)
-            {
-                _bodyCapsuleMesh.material = _hiddenMaterial;
+                SetCharacterData(_hiddenData);
+                SetCharacterMaterial(_hiddenData);
             }
             else
             {
-                _bodyCapsuleMesh.material = _humanMaterial;
+                SetCharacterData(_humanData);
+                SetCharacterMaterial(_humanData);
             }
+        }
+
+        private void SetCharacterMaterial(CharacterData newCharData)
+        {
+            _bodyCapsuleMesh.material = newCharData.CharacterMaterial;
 
             if (!_bodyCapsuleMesh.enabled)
             {
@@ -75,43 +75,45 @@ namespace HiddenGame.PlayerComponents
             }
         }
 
-        public void SetCharacterData(bool characterIsHidden)
+        public void SetCharacterData(CharacterData newCharData)
         {
-            if (characterIsHidden)
-            {
-                Debug.Log("Selected hidden player role");
+            Debug.Log("Setting data");
 
-                _humanScript.enabled = false;
-                _hiddenScript.enabled = true;
-                _moveScript.SetData(_hiddenData);
+            // Mirror only allows certain data types to be passed into Commands
+            // Since the scriptable object for character data uses a material now,
+            // the individual values have to be passed separately where needed,
+            // instead of the whole scriptable object data container
+            if (_isHidden)
+            {
+                _activeController = _hiddenScript;
             }
             else
             {
-                Debug.Log("Selected human player role");
-
-                _hiddenScript.enabled = false;
-                _humanScript.enabled = true;
-                _moveScript.SetData(_humanData);
+                _activeController = _humanScript;
             }
+
+            _moveScript.SetData(newCharData);
+            _healthScript.CmdSetMaxHealth(newCharData.Health);
+
         }
 
         private void SetPlayerActive(bool oldState, bool newState)
         {
-            gameObject.SetActive(newState);
+            _activeController.enabled = newState;
         }
 
         [Command]
         public void CmdServerSetRole(bool isPlayerHidden)
         {
             _isHidden = isPlayerHidden;
-            //InitializeCharacter(!_isHidden, _isHidden);
+            InitializeCharacter(!_isHidden, _isHidden);
         }
 
-        //[Command]
-        //public void CmdSetPlayerSpawned(bool isPlayerSpawned)
-        //{
-        //    _isSpawned = isPlayerSpawned;
-        //    SetPlayerActive(false, _isSpawned);
-        //}
+        [Command]
+        public void CmdSetPlayerSpawned(bool isPlayerSpawned)
+        {
+            _isSpawned = isPlayerSpawned;
+            SetPlayerActive(!_isSpawned, _isSpawned);
+        }
     }
 }

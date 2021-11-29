@@ -38,7 +38,8 @@ namespace HiddenGame.GameManagement
             PlayerStateManager stateManager = localPlayer.GetComponent<PlayerStateManager>();
 
             stateManager.CmdServerSetRole(_isPlayerHidden);
-            stateManager.SetCharacterData(_isPlayerHidden);
+
+            stateManager.CmdSetPlayerSpawned(true);
 
             RespawnManager.Instance.RespawnPlayer();
 
