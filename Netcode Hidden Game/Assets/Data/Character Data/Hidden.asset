@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e61a1a880e450545be51a5e9da22517, type: 3}
   m_Name: Hidden
   m_EditorClassIdentifier: 
+  Health: 120
   Speed: 8
   JumpForce: 8
+  CharacterMaterial: {fileID: 2100000, guid: 59f5df13cd7a24e4ca00b7ec58bf170a, type: 2}

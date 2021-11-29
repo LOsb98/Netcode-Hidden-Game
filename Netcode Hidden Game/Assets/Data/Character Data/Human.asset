@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e61a1a880e450545be51a5e9da22517, type: 3}
   m_Name: Human
   m_EditorClassIdentifier: 
+  Health: 200
   Speed: 5
   JumpForce: 3
+  CharacterMaterial: {fileID: 2100000, guid: db01c80136f44bb42b3859e8308e9267, type: 2}
