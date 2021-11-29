@@ -9,6 +9,7 @@ namespace HiddenGame.PlayerComponents
     //Controller scripts decide when to perform actions, check states, and calculate movement vectors
     public class Movement : MonoBehaviour
     {
+        [SerializeField] private float _leapForce;
         [SerializeField] private float _speed;
         [SerializeField] private float _slopeForce;
         [SerializeField] private float _jumpForce;
@@ -34,7 +35,6 @@ namespace HiddenGame.PlayerComponents
         {
             _speed = charData.Speed;
             _jumpForce = charData.JumpForce;
-            
         }
 
         public void HorizontalMove(Vector3 moveVector, Vector3 slopeNormal, bool isGrounded)
@@ -59,7 +59,7 @@ namespace HiddenGame.PlayerComponents
 
             if (!isGrounded)
             {
-                moveVector = new Vector3(moveVector.x, _rb.velocity.y, moveVector.z);
+                moveVector = new Vector3(_rb.velocity.x, _rb.velocity.y, _rb.velocity.z);
             }
 
             if (slopeNormal == Vector3.up)
@@ -91,6 +91,13 @@ namespace HiddenGame.PlayerComponents
         {
             transform.position += new Vector3(0f, _jumpStartHeight, 0f);
             _rb.velocity = new Vector3(_rb.velocity.x, _jumpForce, _rb.velocity.z);
+        }
+
+        // By passing in a Vector3 it will be easy to reuse this method for other movement based abilities
+        public void BigJump(Vector3 leapDirection)
+        {
+            transform.position += new Vector3(0f, _jumpStartHeight, 0f);
+            _rb.velocity = leapDirection * _leapForce;
         }
     }
 }
