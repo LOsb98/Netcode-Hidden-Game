@@ -4,6 +4,7 @@ using HiddenGame.Misc;
 
 namespace HiddenGame.PlayerComponents
 {
+    // TODO : Implement input system package for controls
     public abstract class PlayerController : NetworkBehaviour
     {
         #region Movement states
@@ -28,12 +29,27 @@ namespace HiddenGame.PlayerComponents
 
         #region  Component references
         [SerializeField] private Rigidbody _rb;
-        [SerializeField] private Transform _camPos;
-        [SerializeField] private Movement _movement;
+        [SerializeField] protected Transform _camPos;
+        [SerializeField] protected Movement _movement;
 
         public Transform CamPos => _camPos;
 
         #endregion
+
+        [SerializeField] protected float _abilityCooldown;
+        protected float _abilityCooldownTimer;
+
+        protected abstract void FireAbility();
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+
+            if (isLocalPlayer)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
 
         protected void Start()
         {
@@ -70,6 +86,18 @@ namespace HiddenGame.PlayerComponents
             GetMouseInput();
 
             CheckJumpInput();
+
+            if (_abilityCooldownTimer > 0)
+            {
+                _abilityCooldownTimer -= Time.deltaTime;
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                FireAbility();
+                _abilityCooldownTimer = _abilityCooldown;
+            }
         }
 
         private void FixedUpdate()
@@ -135,7 +163,7 @@ namespace HiddenGame.PlayerComponents
             //Check for slope
             RaycastHit slopeCheck;
 
-            if (Physics.Raycast(transform.position, Vector3.down, out slopeCheck, _slopeCheckDistance))
+            if (Physics.Raycast(transform.position, Vector3.down, out slopeCheck, _slopeCheckDistance, _groundCheckLayer))
             {
                 ////If on flat surface
                 //if (slopeCheck.normal == Vector3.up)
