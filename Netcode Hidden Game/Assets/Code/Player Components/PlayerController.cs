@@ -32,6 +32,9 @@ namespace HiddenGame.PlayerComponents
         [SerializeField] protected Transform _camPos;
         [SerializeField] protected Movement _movement;
 
+        [SerializeField] protected CreateNetworkHitscanRay _networkHitscanRaycast;
+        [SerializeField] protected CreateNetworkProjectile _networkProjectile;
+
         public Transform CamPos => _camPos;
 
         #endregion
