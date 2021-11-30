@@ -217,6 +217,7 @@ GameObject:
   - component: {fileID: 4319606705918916629}
   - component: {fileID: 4319606705918916630}
   - component: {fileID: 7818790646767346092}
+  - component: {fileID: 5913788795283702481}
   m_Layer: 6
   m_Name: PlayerPrefab
   m_TagString: Player
@@ -308,8 +309,6 @@ MonoBehaviour:
   _humanScript: {fileID: -9207633542255492197}
   _hiddenScript: {fileID: 8367193144140414987}
   _bodyCapsuleMesh: {fileID: 3024861436992661812}
-  _humanMaterial: {fileID: 2100000, guid: db01c80136f44bb42b3859e8308e9267, type: 2}
-  _hiddenMaterial: {fileID: 2100000, guid: 59f5df13cd7a24e4ca00b7ec58bf170a, type: 2}
   _moveScript: {fileID: 5265395008694196427}
   _healthScript: {fileID: 7244913927075119270}
 --- !u!114 &7244913927075119270
@@ -339,10 +338,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e22d48aff1bc441bea736cb4c07fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   _leapForce: 18
-  _speed: 5
   _slopeForce: 2
-  _jumpForce: 3
   _jumpStartHeight: 0.3
   _rb: {fileID: 4319606705918916629}
 --- !u!114 &-9207633542255492197
@@ -370,8 +369,11 @@ MonoBehaviour:
   _rb: {fileID: 4319606705918916629}
   _camPos: {fileID: 4225389826182322882}
   _movement: {fileID: 5265395008694196427}
+  _networkHitscanRaycast: {fileID: 5913788795283702481}
+  _networkProjectile: {fileID: 0}
   _abilityCooldown: 5
   _landmine: {fileID: 5184589156151063200, guid: 7b011796947b0e44fa939c2ec7b1eff1, type: 3}
+  _weapon: {fileID: 11400000, guid: 01da7cc117bdb6842bdd743638822fc3, type: 2}
 --- !u!114 &8367193144140414987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,6 +399,8 @@ MonoBehaviour:
   _rb: {fileID: 4319606705918916629}
   _camPos: {fileID: 4225389826182322882}
   _movement: {fileID: 5265395008694196427}
+  _networkHitscanRaycast: {fileID: 0}
+  _networkProjectile: {fileID: 0}
   _abilityCooldown: 3
 --- !u!54 &4319606705918916629
 Rigidbody:
@@ -442,6 +446,25 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0.05, z: 0}
+--- !u!114 &5913788795283702481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4319606705918916626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 857b3b3d645844143a1ba69e0be944ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  _viewPort: {fileID: 4225389826182322882}
+  _layersToHit:
+    serializedVersion: 2
+    m_Bits: 72
+  _raycastStartDistance: 1
 --- !u!1 &4319606706635446094
 GameObject:
   m_ObjectHideFlags: 0
