@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using HiddenGame.ScriptableObjects;
+using HiddenGame.Misc;
 
 namespace HiddenGame.PlayerComponents
 {
@@ -28,7 +29,12 @@ namespace HiddenGame.PlayerComponents
 
         private void Start()
         {
-            _localPlayer = NetworkClient.localPlayer.transform;
+            //if (isServer)
+            //{
+            //    return;
+            //}
+
+            //_localPlayer = NetworkClient.localPlayer.transform;
 
             if (isLocalPlayer)
             {
@@ -38,21 +44,25 @@ namespace HiddenGame.PlayerComponents
 
         private void FixedUpdate()
         {
-            _healthBarTransform.LookAt(_localPlayer.transform);
+            // Make health bars always face toward the main camera
+            _healthBarTransform.LookAt(CameraFollow.Instance.transform);
         }
 
-        [Command]
-        public void CmdSetMaxHealth(int newHealth)
+        public void SetMaxHealth(int newHealth)
         {
             _healthSlider.maxValue = newHealth;
             _maxHealth = newHealth;
             _currentHealth = _maxHealth;
         }
 
-        [Command]
-        public void CmdChangeHealth(int healthChangeValue)
+        public void TakeDamage(int damageAmount)
         {
-            _currentHealth += healthChangeValue;
+            _currentHealth -= damageAmount;
+        }
+
+        public void HealHealth(int healAmount)
+        {
+            _currentHealth += healAmount;
         }
 
         private void UpdateHealthBar(int oldValue, int newValue)

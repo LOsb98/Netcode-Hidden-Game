@@ -10,7 +10,7 @@ namespace HiddenGame.PlayerComponents
 {
     public class PlayerStateManager : NetworkBehaviour
     {
-        [SyncVar(hook = nameof(InitializeCharacter))] private bool _isHidden;
+        [SyncVar(hook = nameof(SetTeamRole))] private bool _isHidden;
 
         [SyncVar(hook = nameof(SetPlayerActive))] private bool _isSpawned;
 
@@ -21,13 +21,25 @@ namespace HiddenGame.PlayerComponents
         [SerializeField] private HiddenAbilities _hiddenScript;
 
         [SerializeField] private MeshRenderer _bodyCapsuleMesh;
-        [SerializeField] private Material _humanMaterial;
-        [SerializeField] private Material _hiddenMaterial;
 
         [SerializeField] private Movement _moveScript;
         [SerializeField] private PlayerHealth _healthScript;
 
         private PlayerController _activeController;
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            SetTeamRole(!_isHidden, _isHidden);
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            SetTeamRole(!_isHidden, _isHidden);
+        }
 
         private void Start()
         {
@@ -35,85 +47,75 @@ namespace HiddenGame.PlayerComponents
             {
                 Destroy(GetComponent<Rigidbody>());
             }
+
+            //SetTeamRole(!_isHidden, _isHidden);
         }
 
-        public override void OnStartServer()
+        private void SetTeamRole(bool oldValue, bool newValue)
         {
-            InitializeCharacter(!_isHidden, _isHidden);
-            SetPlayerActive(!_isSpawned, _isSpawned);
-        }
-
-        public override void OnStartClient()
-        {
-            InitializeCharacter(!_isHidden, _isHidden);
-            SetPlayerActive(!_isSpawned, _isSpawned);
-        }
-
-        private void InitializeCharacter(bool oldRole, bool newRole)
-        {
-            //Hook method for setting data/visuals
-            
-            if (newRole)
+            if (newValue)
             {
-                SetCharacterData(_hiddenData);
-                SetCharacterMaterial(_hiddenData);
-            }
-            else
-            {
-                SetCharacterData(_humanData);
-                SetCharacterMaterial(_humanData);
-            }
-        }
+                int maxHealth = _hiddenData.Health;
+                _healthScript.SetMaxHealth(maxHealth);
 
-        private void SetCharacterMaterial(CharacterData newCharData)
-        {
-            _bodyCapsuleMesh.material = newCharData.CharacterMaterial;
+                Material hiddenMaterial = _hiddenData.CharacterMaterial;
+                _bodyCapsuleMesh.material = hiddenMaterial;
 
-            if (!_bodyCapsuleMesh.enabled)
-            {
-                _bodyCapsuleMesh.enabled = true;
-            }
-        }
-
-        public void SetCharacterData(CharacterData newCharData)
-        {
-            Debug.Log("Setting data");
-
-            // Mirror only allows certain data types to be passed into Commands
-            // Since the scriptable object for character data uses a material now,
-            // the individual values have to be passed separately where needed,
-            // instead of the whole scriptable object data container
-            if (_isHidden)
-            {
                 _activeController = _hiddenScript;
+
+                _moveScript.SetData(_hiddenData);
             }
             else
             {
+                int maxHealth = _humanData.Health;
+                _healthScript.SetMaxHealth(maxHealth);
+
+                Material hiddenMaterial = _humanData.CharacterMaterial;
+                _bodyCapsuleMesh.material = hiddenMaterial;
+
                 _activeController = _humanScript;
+
+                _moveScript.SetData(_humanData);
             }
-
-            _moveScript.SetData(newCharData);
-            _healthScript.CmdSetMaxHealth(newCharData.Health);
-
         }
 
-        private void SetPlayerActive(bool oldState, bool newState)
+        public void AssignRole(bool isHidden)
         {
-            _activeController.enabled = newState;
-        }
-
-        [Command]
-        public void CmdServerSetRole(bool isPlayerHidden)
-        {
-            _isHidden = isPlayerHidden;
-            InitializeCharacter(!_isHidden, _isHidden);
+            if (isHidden)
+            {
+                CmdJoinHiddenTeam();
+            }
+            else
+            {
+                CmdJoinHumanTeam();
+            }
         }
 
         [Command]
-        public void CmdSetPlayerSpawned(bool isPlayerSpawned)
+        private void CmdJoinHiddenTeam()
         {
-            _isSpawned = isPlayerSpawned;
-            SetPlayerActive(!_isSpawned, _isSpawned);
+            _isHidden = true;
+
+            EnablePlayer();
+        }
+
+        [Command]
+        private void CmdJoinHumanTeam()
+        {
+            _isHidden = false;
+
+            EnablePlayer();
+        }
+
+        private void EnablePlayer()
+        {
+            _isSpawned = true;
+        }
+
+        private void SetPlayerActive(bool oldValue, bool newValue)
+        {
+            _activeController.enabled = newValue;
+            _bodyCapsuleMesh.enabled = newValue;
         }
     }
 }

@@ -9,6 +9,9 @@ namespace HiddenGame.GameManagement
 {
     public class RoleSelector : MonoBehaviour
     {
+        //[SyncVar] [SerializeField] private List<GameObject> _hiddenTeam;
+        //[SyncVar] [SerializeField] private List<GameObject> _humanTeam;
+
         [SerializeField] private TextMeshProUGUI _currentRoleText;
 
         [SerializeField] private bool _isPlayerHidden;
@@ -37,9 +40,7 @@ namespace HiddenGame.GameManagement
 
             PlayerStateManager stateManager = localPlayer.GetComponent<PlayerStateManager>();
 
-            stateManager.CmdServerSetRole(_isPlayerHidden);
-
-            stateManager.CmdSetPlayerSpawned(true);
+            stateManager.AssignRole(_isPlayerHidden);
 
             RespawnManager.Instance.RespawnPlayer();
 
