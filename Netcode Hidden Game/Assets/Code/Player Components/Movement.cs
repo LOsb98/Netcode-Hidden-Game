@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using HiddenGame.ScriptableObjects;
+using Mirror;
 
 namespace HiddenGame.PlayerComponents
 {
     //This class handles applying the actual movement and holds values like movement speed
     //Controller scripts decide when to perform actions, check states, and calculate movement vectors
-    public class Movement : MonoBehaviour
+    public class Movement : NetworkBehaviour
     {
+        [SyncVar] private float _speed;
+        [SyncVar] private float _jumpForce;
+
         [SerializeField] private float _leapForce;
-        [SerializeField] private float _speed;
         [SerializeField] private float _slopeForce;
-        [SerializeField] private float _jumpForce;
         [SerializeField] private float _jumpStartHeight;
         [SerializeField] private Rigidbody _rb;
 
