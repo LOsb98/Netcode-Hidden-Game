@@ -1,20 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenGame.PlayerComponents;
 
 namespace HiddenGame.ScriptableObjects
 {
     [CreateAssetMenu(menuName = "Weapon Data/Hitscan Weapon")]
-    public abstract class HitscanWeapon : WeaponData
+    public class HitscanWeapon : WeaponData
     {
-        public override void Initialize()
+        [SerializeField] private CreateNetworkHitscanRay _raycastScript;
+
+        public float HitscanRange;
+
+        public int HitscanDamage;
+
+        public override void Initialize(GameObject thisObject)
         {
-            //Get component for creating a raycast
+            _raycastScript = thisObject.GetComponent<CreateNetworkHitscanRay>();
         }
 
         public override void Fire()
         {
-
+            //_raycastScript.FireHitscanRay(HitscanDamage, HitscanRange);
         }
     }
 }

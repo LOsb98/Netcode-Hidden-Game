@@ -11,8 +11,13 @@ namespace HiddenGame.ScriptableObjects
         public float FireRate;
         public float ReloadTime;
 
-        public abstract void Initialize();
+        public abstract void Initialize(GameObject thisObject);
 
+        /// <summary>
+        /// Shoots the relvant weapon.
+        /// This will always be done on the server to 
+        /// prevent players cheating in their own damage values.
+        /// </summary>
         public abstract void Fire();
     }
 }

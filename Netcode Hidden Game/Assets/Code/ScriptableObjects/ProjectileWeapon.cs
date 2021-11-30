@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenGame.PlayerComponents;
 
 namespace HiddenGame.ScriptableObjects
 {
     [CreateAssetMenu(menuName = "Weapon Data/Projectile Weapon")]
-    public abstract class ProjectileWeapon : WeaponData
+    public class ProjectileWeapon : WeaponData
     {
-        public override void Initialize()
+        [SerializeField] private CreateNetworkProjectile _projectileScript;
+
+        public GameObject ProjectileToFire;
+
+        public override void Initialize(GameObject thisObject)
         {
-            //Get component for instantiating a projectile
+            _projectileScript = thisObject.GetComponent<CreateNetworkProjectile>();
         }
 
         public override void Fire()
