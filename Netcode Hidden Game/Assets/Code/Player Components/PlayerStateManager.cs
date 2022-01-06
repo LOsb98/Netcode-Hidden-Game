@@ -32,6 +32,7 @@ namespace HiddenGame.PlayerComponents
             base.OnStartClient();
 
             SetTeamRole(!_isHidden, _isHidden);
+            SetPlayerActive(!_isSpawned, _isSpawned);
         }
 
         public override void OnStartServer()
@@ -39,6 +40,7 @@ namespace HiddenGame.PlayerComponents
             base.OnStartServer();
 
             SetTeamRole(!_isHidden, _isHidden);
+            SetPlayerActive(!_isSpawned, _isSpawned);
         }
 
         private void Start()
