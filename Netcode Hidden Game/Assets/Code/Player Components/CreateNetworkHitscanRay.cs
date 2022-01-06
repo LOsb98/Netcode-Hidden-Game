@@ -27,6 +27,7 @@ namespace HiddenGame.PlayerComponents
 
         public void FireHitscanRay(HitscanWeapon weaponData)
         {
+            //TODO: Implement anti-friendly fire system
             int damage = weaponData.HitscanDamage;
             float range = weaponData.HitscanRange;
 
@@ -37,25 +38,11 @@ namespace HiddenGame.PlayerComponents
                 if (hitscanRaycast.transform.TryGetComponent<PlayerHealth>(out PlayerHealth healthScript))
                 {
                     healthScript.TakeDamage(damage);
+                    healthScript.DebugDamageTaken(damage, hitscanRaycast.transform.gameObject);
                 }
-
-                DebugDamageTaken(damage, hitscanRaycast.transform.gameObject);
             }
 
             ShowDebugRay(_viewPort.position, _viewPort.position + (_viewPort.forward * range));
-        }
-
-        private void DebugDamageTaken(int damageTaken, GameObject playerHit)
-        {
-            Debug.Log($"{playerHit} was hit for {damageTaken} damage.");
-
-            RpcDebugDamageTaken(damageTaken, playerHit);
-        }
-
-        [ClientRpc]
-        private void RpcDebugDamageTaken(int damageTaken, GameObject playerHit)
-        {
-            Debug.Log($"{playerHit} was hit for {damageTaken} damage.");
         }
 
         private void ShowDebugRay(Vector3 startPos, Vector3 direction)

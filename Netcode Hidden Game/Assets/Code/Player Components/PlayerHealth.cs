@@ -76,5 +76,18 @@ namespace HiddenGame.PlayerComponents
                 _healthSlider.value = newValue;
             }
         }
+
+        public void DebugDamageTaken(int damageTaken, GameObject playerHit)
+        {
+            Debug.Log($"{playerHit} was hit for {damageTaken} damage.");
+
+            RpcDebugDamageTaken(damageTaken, playerHit);
+        }
+
+        [ClientRpc]
+        private void RpcDebugDamageTaken(int damageTaken, GameObject playerHit)
+        {
+            Debug.Log($"{playerHit} was hit for {damageTaken} damage.");
+        }
     }
 }
