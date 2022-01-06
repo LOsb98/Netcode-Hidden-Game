@@ -92,6 +92,7 @@ namespace HiddenGame.PlayerComponents
 
             if (_abilityCooldownTimer > 0)
             {
+                //TODO: Ability timer is currently done client-side, should be server-side
                 _abilityCooldownTimer -= Time.deltaTime;
                 return;
             }
@@ -203,7 +204,7 @@ namespace HiddenGame.PlayerComponents
             _movement.HorizontalMove(_move, CheckSlope(), _grounded);
         }
 
-        private void OnDrawGizmosSelected()
+        protected void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(_groundCheckPos.position, _groundCheckSize);
