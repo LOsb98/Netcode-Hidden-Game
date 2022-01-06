@@ -21,6 +21,20 @@ namespace HiddenGame.PlayerComponents
         [SyncVar] private int _maxHealth;
         [SyncVar(hook = nameof(UpdateHealthBar))] private int _currentHealth;
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            UpdateHealthBar(_currentHealth, _currentHealth);
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            UpdateHealthBar(_currentHealth, _currentHealth);
+        }
+
         private void Awake()
         {
             _healthSlider = _healthBar.GetComponent<Slider>();
@@ -58,6 +72,12 @@ namespace HiddenGame.PlayerComponents
         public void TakeDamage(int damageAmount)
         {
             _currentHealth -= damageAmount;
+
+            if (_currentHealth <= 0)
+            {
+                //Respawn player
+                //TODO: Respawn manager currently works locally on client, needs to be changed to handle respawns from server end
+            }
         }
 
         public void HealHealth(int healAmount)
